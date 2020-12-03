@@ -14,7 +14,7 @@
       dest: /usr/lib/systemd/system/prometheus.service
   - name: create user prometheus
     shell: useradd prometheus
-  - name: create data
+  - name: create data dir
     shell: mkdir -p /data/prometheus
   - name: chown
     shell: chown -R prometheus:prometheus /usr/local/bin/prometheus /data/prometheus
