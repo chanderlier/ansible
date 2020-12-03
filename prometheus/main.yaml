@@ -1,0 +1,39 @@
+---
+- hosts: server
+  remote_user: root
+  tasks: 
+  - name: download prometheus
+    shell: wget https://github.com/prometheus/prometheus/releases/download/v2.23.0/prometheus-2.23.0.linux-amd64.tar.gz
+  - name: decompress prometheus
+    shell: tar -zxvf prometheus-2.23.0.linux-amd64.tar.gz
+  - name: mv prometheus
+    shell: mv prometheus-2.23.0.linux-amd64 /usr/local/bin/promethues
+  - name: systemctl prometheus
+    copy: 
+      src: prometheus.service 
+      dest: /usr/lib/systemd/system/prometheus.service
+  - name: systemctl enable && start prometheus
+    service:
+      name: prometheus
+      state: started
+      enabled: yes
+  - name: download grafana
+    shell: wget https://dl.grafana.com/oss/release/grafana-7.3.4-1.x86_64.rpm
+  - name: install grafana
+    shell: yum install -y grafana-7.3.4-1.x86_64.rpm
+  - name: systemctl enable && start grafana
+    service:
+      name: grafana
+      state: started
+      enabled: yes
+  - name: download consul
+    shell: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+  - name: install consul
+    shell: yum install -y consul
+  - name: config.json
+    copy: 
+      src: {{ items.src }}
+      dest: {{ items.dest }}
+    with_items:
+      - { src: 'config.json', dest: '/etc/consul.d/config.json'}
+      - { src: 'consul.service', dest: '/usr/lib/systemd/system/consul.service'}
