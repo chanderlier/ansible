@@ -1,0 +1,9 @@
+{
+    "bootstrap_expect": 1,
+    "datacenter": "sibat_consul",
+    "data_dir": "/data/consul",
+    "server": true,
+    "client_addr": "0.0.0.0",
+    "ui": true,
+    "bind_addr": "{{ansible_all_ipv4_addresses}}"
+}

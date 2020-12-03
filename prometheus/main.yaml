@@ -12,6 +12,12 @@
     copy: 
       src: prometheus.service 
       dest: /usr/lib/systemd/system/prometheus.service
+  - name: create user prometheus
+    shell: useradd prometheus
+  - name: create data
+    shell: mkdir -p /data/prometheus
+  - name: chown
+    shell: chown -R prometheus:prometheus /usr/local/bin/prometheus /data/prometheus
   - name: systemctl enable && start prometheus
     service:
       name: prometheus
@@ -37,3 +43,18 @@
     with_items:
       - { src: 'config.json', dest: '/etc/consul.d/config.json'}
       - { src: 'consul.service', dest: '/usr/lib/systemd/system/consul.service'}
+  - name: download alertmanager
+    shell: wget https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-386.tar.gz
+  - name: decompress 
+    shell: tar -zxvf alertmanager-0.21.0.linux-386.tar.gz
+  - name: mv 
+    shell: mv alertmanager-0.21.0.linux-386 /usr/lccal/bin/alertmanager
+  - name: systemctl alertmanager
+    copy: 
+      src: alertmanager.service
+      dest: /usr/lib/systemd/system/alertmanager.service
+  - name: systemctl enable && start alertmanager
+    service: 
+      name: alertmanager
+      state: started
+      enabled: yes
